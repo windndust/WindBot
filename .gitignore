@@ -1,0 +1,11 @@
+# Eclipse files to ignore
+/.settings
+/.project
+/.classpath
+
+
+/target
+
+
+# Spring files to ignore
+application*local*.yml
