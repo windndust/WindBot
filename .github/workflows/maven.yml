@@ -42,6 +42,6 @@ jobs:
       run: mvn -B package
 
     - name: Execute plugin goal deploy:deploy to publish to github packages
-      run: mvn deploy:deploy -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn jar:jar deploy:deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
