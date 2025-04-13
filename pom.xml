@@ -32,4 +32,11 @@
 		</dependency>
 	</dependencies>
 
+	<distributionManagement>
+		<repository>
+			<id>github_package</id>
+			<url>https://maven.pkg.github.com/windndust/WindBot</url>
+		</repository>
+	</distributionManagement>
+
 </project>
