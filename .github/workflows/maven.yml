@@ -50,6 +50,12 @@ jobs:
     - name: Execute package phase of default lifecycle
       run: mvn -X -B package -s settings.xml
 
+    - name: print present working directory
+      run: echo $PWD
+
+    - name: print contents of directory
+      run: ls -lt
+
     - name: echo actor
       run: echo ${{ github.actor }}
 
