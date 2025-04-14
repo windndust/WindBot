@@ -54,6 +54,6 @@ jobs:
       run: cat ${{ github.workspace }}/settings.xml
 
     - name: Execute plugin goal deploy:deploy to publish to github packages
-      run: mvn -X jar:jar deploy:deploy -s ${{ github.workspace }}/settings.xml
+      run: mvn -X jar:jar deploy:deploy -s ${{github.workspace}}/settings.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
