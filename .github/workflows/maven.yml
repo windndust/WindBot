@@ -38,17 +38,29 @@ jobs:
         server-id: github
         settings-path: ${{ github.workspace }}
 
-    - name: Execute package phase of default lifecycle
-      run: mvn -X -B package
+    - name: print present working directory
+      run: echo $PWD
+
+    - name: print contents of directory
+      run: ls -lt
 
     - name: print default settings.xml
       run: cat settings.xml
+
+    - name: Execute package phase of default lifecycle
+      run: mvn -X -B package -s settings.xml
 
     - name: echo actor
       run: echo ${{ github.actor }}
 
     - name: echo token
       run: echo ${{ github.token }}
+
+    - name: print present working directory 2
+      run: echo $PWD
+
+    - name: print contents of directory 2
+      run: ls -lt
 
     - name: print alternate settings.xml
       run: cat ${{ github.workspace }}/settings.xml
