@@ -68,4 +68,5 @@ jobs:
     - name: Execute plugin goal deploy:deploy to publish to github packages
       run: mvn -X jar:jar deploy:deploy -s ${{github.workspace}}/settings.xml
       env:
+        GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ github.token }}
