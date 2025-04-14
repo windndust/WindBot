@@ -34,7 +34,8 @@
 
 	<distributionManagement>
 		<repository>
-			<id>github_package</id>
+			<id>github</id>
+			<name>GitHub Packages</name>
 			<url>https://maven.pkg.github.com/windndust/WindBot</url>
 		</repository>
 	</distributionManagement>
