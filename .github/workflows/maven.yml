@@ -44,6 +44,12 @@ jobs:
     - name: print default settings.xml
       run: cat settings.xml
 
+    - name: echo actor
+      run: echo ${{ github.actor }}
+
+    - name: echo token
+      run: echo ${{ github.token }}
+
     - name: print alternate settings.xml
       run: cat ${{ github.workspace }}/settings.xml
 
