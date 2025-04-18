@@ -69,5 +69,5 @@ jobs:
       env:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
-      run: mvn -X jar:jar deploy:deploy -s settings
+      run: mvn -X jar:jar deploy:deploy -s settings.xml
 
