@@ -38,10 +38,36 @@ jobs:
         server-id: github
         settings-path: ${{ github.workspace }}
 
+    - name: print present working directory
+      run: echo $PWD
+
+    - name: print contents of directory
+      run: ls -lt
+
+    - name: print global settings.xml
+      run: cat /usr/share/apache-maven-3.9.9/conf/settings.xml
+
+    - name: print user settings.xml
+      run: cat settings.xml
+
     - name: Execute package phase of default lifecycle
-      run: mvn -B package
+      run: mvn -X -B package
+
+    - name: print present working directory 2
+      run: echo $PWD
+
+    - name: print contents of directory 2
+      run: ls -lt
+
+    - name: print contents of target directory
+      run: ls target -lt
+
+    - name: print alternate settings.xml
+      run: cat ${{ github.workspace }}/settings.xml
 
     - name: Execute plugin goal deploy:deploy to publish to github packages
-      run: mvn deploy:deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
+      run: mvn -X jar:jar deploy:deploy -s settings.xml
+

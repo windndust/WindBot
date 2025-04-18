@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.mneidinger.discordbot</groupId>
-	<artifactId>WindBot</artifactId>
+	<artifactId>windbot</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -31,5 +31,13 @@
 			<version>3.4.2</version>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/windndust/WindBot</url>
+		</repository>
+	</distributionManagement>
 
 </project>
