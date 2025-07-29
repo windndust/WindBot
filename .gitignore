@@ -9,3 +9,9 @@
 
 # Spring files to ignore
 application*local*.yml
+
+# Java files to ignore
+*.jar
+
+# Maven files to ignore
+dependency-reduced-pom.xml
