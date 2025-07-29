@@ -9,6 +9,7 @@
 name: Java CI with Maven
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - 'main'
@@ -44,8 +45,8 @@ jobs:
     - name: print contents of directory
       run: ls -lt
 
-    - name: print global settings.xml
-      run: cat /usr/share/apache-maven-3.9.9/conf/settings.xml
+    - name: print /usr/share contents
+      run: ls /usr/share
 
     - name: print user settings.xml
       run: cat settings.xml
