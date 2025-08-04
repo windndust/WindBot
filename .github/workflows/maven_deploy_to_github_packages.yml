@@ -6,14 +6,13 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Maven Deploy To Github Packages
 
 on:
   workflow_dispatch:
   push:
     branches:
     - 'main'
-    - 'feature/**'
 
 jobs:
   build:
@@ -39,32 +38,12 @@ jobs:
         server-id: github
         settings-path: ${{ github.workspace }}
 
-    - name: print present working directory
-      run: echo $PWD
-
-    - name: print contents of directory
-      run: ls -lt
-
-    - name: print /usr/share contents
-      run: ls /usr/share
-
-    - name: print user settings.xml
-      run: cat settings.xml
+    - name: Create secrets.yml
+      run: |
+        echo "token=${{placeholder}}" > secrets.yml
 
     - name: Execute package phase of default lifecycle
       run: mvn -X -B package
-
-    - name: print present working directory 2
-      run: echo $PWD
-
-    - name: print contents of directory 2
-      run: ls -lt
-
-    - name: print contents of target directory
-      run: ls target -lt
-
-    - name: print alternate settings.xml
-      run: cat ${{ github.workspace }}/settings.xml
 
     - name: Execute plugin goal deploy:deploy to publish to github packages
       env:
