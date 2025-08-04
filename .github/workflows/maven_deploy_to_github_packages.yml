@@ -40,7 +40,7 @@ jobs:
 
     - name: Create secrets.yml
       run: |
-        echo "token=${{placeholder}}" > secrets.yml
+        echo "token:placeholder" > secrets.yml
 
     - name: Execute package phase of default lifecycle
       run: mvn -X -B package
