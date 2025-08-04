@@ -33,6 +33,18 @@
 	</dependencies>
 
 	<build>
+		<filters>
+			<filter>secrets.yml</filter>
+		</filters>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>application.yml</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -58,7 +70,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<finalName>${project.build.finalName}-standalone-runnable</finalName>
+							<outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
 						</configuration>
 					</execution>
 				</executions>
