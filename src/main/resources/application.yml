@@ -1,1 +1,1 @@
-token: [put your discord bot token here]
+token: ${discord.token}
