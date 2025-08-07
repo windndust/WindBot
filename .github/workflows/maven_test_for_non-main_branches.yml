@@ -33,5 +33,5 @@ jobs:
       run: |
         echo "token:placeholder" > secrets.yml
 
-    - name: Execute package phase of default lifecycle
+    - name: Execute test phase of default lifecycle
       run: mvn -X -B test
