@@ -46,24 +46,32 @@ jobs:
         echo "JAR_NAME=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar" >> "$GITHUB_ENV"
         echo "NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_ENV"
         echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_ENV"
+        echo "FULLTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:$VERSION" >> "$GITHUB_ENV"
+        echo "LATESTTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:latest" >> "$GITHUB_ENV"
 
     - name: Build the docker image
-      run: docker build . --file Dockerfile --tag $NAME:$VERSION --build-arg JAR_NAME=$JAR_NAME
+      run: docker build . --file Dockerfile --tag $FULLTAG --build-arg JAR_NAME=$JAR_NAME
 
     - name: Tag the docker image with latest
-      run: docker tag $NAME:$VERSION $NAME:latest
+      run: docker tag $FULLTAG $LATESTTAG
 
-    - name: Login to Github Docker registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
+    - name: Login to registry for docker images
+      run: echo $GH_PACKAGE_PAT_CLASSIC | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
-    - name: Push Docker image
-      uses: docker/build-push-action@v6
-      with:
-        push: true
-        tags: ${{ env.NAME }}:latest
-        load: true
-        provenance: false
+    - name: Push to registry for docker images
+      run: docker push $FULLTAG
+
+#    - name: Login to Github Docker registry
+#      uses: docker/login-action@v3
+#      with:
+#        registry: ${{ env.REGISTRY }}
+#        username: ${{ github.actor }}
+#        password: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
+
+#    - name: Push Docker image
+#      uses: docker/build-push-action@v6
+#      with:
+#        push: true
+#        tags: ${{ env.NAME }}:latest
+#        load: true
+#        provenance: false
