@@ -58,7 +58,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.variables.outputs.JAR_NAME }}
-        path: target/${{ steps.variables.outputs.JAR_NAME }}
+        path: |
+          target/${{ steps.variables.outputs.JAR_NAME }}
+          ./.Dockerfile
 
   docker:
     needs: maven_package_and_variable_assignment
@@ -82,7 +84,9 @@ jobs:
       uses: actions/download-artifact@v5
       with:
         name: ${{ env.JAR_NAME }}
-        path: target/${{ env.JAR_NAME }}
+        path: |
+          target/${{ env.JAR_NAME }}
+          ./.Dockerfile
 
     - name: Build the docker image
       run: docker build . --file Dockerfile --tag $FULLTAG --build-arg JAR_NAME=$JAR_NAME
