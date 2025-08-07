@@ -112,8 +112,14 @@ jobs:
       env:
         BEARER_TOKEN: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
       run: |
-        echo "ArtifactId=$ARTIFACTID"
-        curl -v -X DELETE \
-             -H "Authorization: Bearer $BEARER_TOKEN" \
-             -H "Accept: application/vnd.github+json" \
-             https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACTID
+        RESPONSE = $(curl -v -X DELETE \
+                          -H "Authorization: Bearer $BEARER_TOKEN" \
+                          -H "Accept: application/vnd.github+json" \
+                          -H "Connection: close" \
+                          https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACTID)
+        if [ "$RESPONSE" -eq 204 ]; then
+          echo "Temporary artifact successfully deleted"
+        else
+          echo "Received http status: $RESPONSE -Can't confirm artifact deletion"
+          exit 78
+        fi
