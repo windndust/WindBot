@@ -84,14 +84,7 @@ jobs:
       uses: actions/download-artifact@v5
       with:
         name: ${{ env.JAR_NAME }}
-        path: target/${{ env.JAR_NAME }}
-
-
-    - name: Download Dockerfile
-      uses: actions/download-artifact@v5
-      with:
-        name: ${{ env.JAR_NAME }}
-        path: ./.Dockerfile
+        path: .
 
     - name: Build the docker image
       run: docker build . --file Dockerfile --tag $FULLTAG --build-arg JAR_NAME=$JAR_NAME
