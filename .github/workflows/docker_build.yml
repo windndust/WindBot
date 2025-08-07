@@ -54,20 +54,15 @@ jobs:
         echo "NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
         echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
 
-    - name: troubleshoot
-      run: |
-        echo "JAR_NAME=${{ steps.variables.outputs.JAR_NAME }}"
-        ls -la
-
-    - name: Upload Artifact
+    - name: Upload jar and Dockerfile artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ steps.variables.outputs.JAR_NAME }}
+        name: ArtifactsForDocker
         path: |
           target/${{ steps.variables.outputs.JAR_NAME }}
           Dockerfile
 
-  docker:
+  docker_build_and_push:
     needs: maven_package_and_variable_assignment
     env:
       REGISTRY: ghcr.io
@@ -84,18 +79,12 @@ jobs:
       run: |
         echo "FULLTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:$VERSION" >> "$GITHUB_ENV"
         echo "LATESTTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:latest" >> "$GITHUB_ENV"
-        echo $JAR_NAME
 
-    - name: Download jar
+    - name: Download jar and Dockerfile artifacts
       uses: actions/download-artifact@v5
       with:
-        name: ${{ env.JAR_NAME }}
+        name: ArtifactsForDocker
         path: .
-        
-    - name: troubleshoot
-      run: | 
-        ls . -la
-        ls target -la
 
     - name: Build the docker image
       run: docker build . --file Dockerfile --tag $FULLTAG --build-arg JAR_NAME=$JAR_NAME
@@ -115,3 +104,12 @@ jobs:
 
     - name: Registry for docker images loggout
       run: docker logout $REGISTRY
+
+    - name: Delete artifact
+      env:
+        BEARER_TOKEN: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
+      run: |
+        curl -X DELETE \
+             -H "Authorization: Bearer $BEARER_TOKEN" \
+             -H "Accept: application/vnd.github+json" \
+             https://api.github.com/repos/${{ github.repository }}/actions/artifacts/ArtifactsForDocker
