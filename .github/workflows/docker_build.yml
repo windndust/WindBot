@@ -49,6 +49,7 @@ jobs:
       run: mvn -X jar:jar deploy:deploy -s settings.xml
 
     - name: Upload jar and Dockerfile artifacts
+      id: artifact-upload-step
       uses: actions/upload-artifact@v4
       with:
         name: ArtifactsForDocker
