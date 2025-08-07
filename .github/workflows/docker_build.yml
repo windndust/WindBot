@@ -60,7 +60,7 @@ jobs:
         name: ${{ steps.variables.outputs.JAR_NAME }}
         path: |
           target/${{ steps.variables.outputs.JAR_NAME }}
-          ./.Dockerfile
+          .Dockerfile
 
   docker:
     needs: maven_package_and_variable_assignment
@@ -88,7 +88,9 @@ jobs:
         path: .
         
     - name: troubleshoot
-      run: ls . -la
+      run: | 
+        ls . -la
+        ls target -la
 
     - name: Build the docker image
       run: docker build . --file Dockerfile --tag $FULLTAG --build-arg JAR_NAME=$JAR_NAME
