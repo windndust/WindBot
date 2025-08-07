@@ -9,7 +9,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  
 
 jobs:
   build:
@@ -34,7 +33,11 @@ jobs:
         cache: maven
         server-id: github
         settings-path: ${{ github.workspace }}
-        
+
+    - name: Create secrets.yml
+      run: |
+        echo "token:placeholder" > secrets.yml
+
     - name: Execute package phase of default lifecycle
       run: mvn -X -B package
 
@@ -43,23 +46,23 @@ jobs:
 
     - name: Execute maven help:evaluate to get name
       run: name=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')
-      
+
     - name: Execute maven help:evaluate to get version
       run: version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')
-      
+
     - name: Build the docker image
       run: docker build . --file Dockerfile --tag $name:$version --build-arg JAR_NAME=$jarName
-      
+
     - name: Tag the docker image with latest
       run: docker tag $name:$version $name:latest
-    
+
     - name: Login to Github Docker registry
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
-    
+
     - name: Push Docker image
       uses: docker/build-push-action@v6
       with:
@@ -67,6 +70,3 @@ jobs:
         tags: $name:latest
         load: true
         provenance: false
-        
-      
-    
