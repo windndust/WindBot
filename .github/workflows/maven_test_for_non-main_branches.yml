@@ -1,0 +1,33 @@
+name: Maven test for non-main branches
+
+on:
+  push:
+    branches:
+    - 'feature/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+
+    - name: Checkout Github repo
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+        server-id: github
+        settings-path: ${{ github.workspace }}
+
+    - name: Execute package phase of default lifecycle
+      run: mvn -X -B test
