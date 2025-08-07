@@ -44,8 +44,11 @@ jobs:
     - name: Variable assignment from mvn help:evaluate
       run: |
         echo "JAR_NAME=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar" >> "$GITHUB_ENV"
-        echo "NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_ENV"
-        echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_ENV"
+        NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')
+        
+        echo "NAME=$NAME" >> "$GITHUB_ENV"
+        echo "VERSION=$VERSION" >> "$GITHUB_ENV"
         echo "FULLTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:$VERSION" >> "$GITHUB_ENV"
         echo "LATESTTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:latest" >> "$GITHUB_ENV"
 
