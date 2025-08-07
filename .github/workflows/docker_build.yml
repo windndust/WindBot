@@ -115,8 +115,9 @@ jobs:
         RESPONSE = $(curl -v -X DELETE \
                           -H "Authorization: Bearer $BEARER_TOKEN" \
                           -H "Accept: application/vnd.github+json" \
-                          -H "Connection: close" \
                           https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACTID)
+                          
+        echo "Response=$RESPONSE"
         if [ "$RESPONSE" -eq 204 ]; then
           echo "Temporary artifact successfully deleted"
         else
