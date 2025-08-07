@@ -29,5 +29,9 @@ jobs:
         server-id: github
         settings-path: ${{ github.workspace }}
 
+    - name: Create secrets.yml
+      run: |
+        echo "token:placeholder" > secrets.yml
+
     - name: Execute package phase of default lifecycle
       run: mvn -X -B test

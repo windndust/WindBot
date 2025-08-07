@@ -32,7 +32,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
         server-id: github
-        settings-path: ${{ gsithub.workspace }}
+        settings-path: ${{ github.workspace }}
         
     - name: Execute package phase of default lifecycle
       run: mvn -X -B package
