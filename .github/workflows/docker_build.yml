@@ -42,13 +42,13 @@ jobs:
       run: mvn -X -B package
 
     - name: Execute maven help:evaluate to get jar name
-      run: jarName=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar
+      run: jarName=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar && echo "jarName:"$jarName
 
     - name: Execute maven help:evaluate to get name
-      run: name=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')
+      run: name=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //') && echo "name:"$name
 
     - name: Execute maven help:evaluate to get version
-      run: version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')
+      run: version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //') && echo "version:"$version
 
     - name: Build the docker image
       run: docker build . --file Dockerfile --tag $name:$version --build-arg JAR_NAME=$jarName
