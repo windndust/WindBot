@@ -9,6 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  
 
 jobs:
   build:
@@ -52,6 +53,7 @@ jobs:
         echo "FULLTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:$VERSION" >> "$GITHUB_ENV"
         echo "LATESTTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:latest" >> "$GITHUB_ENV"
 
+
     - name: Build the docker image
       run: docker build . --file Dockerfile --tag $FULLTAG --build-arg JAR_NAME=$JAR_NAME
 
@@ -59,9 +61,11 @@ jobs:
       run: docker tag $FULLTAG $LATESTTAG
 
     - name: Login to registry for docker images
+      env:
+        LOGIN_SECRET=${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
       run: |
-        : "${GH_PACKAGE_PAT_CLASSIC:?GH_PACKAGE_PAT_CLASSIC is required}"
-        printf '%s' "$GH_PACKAGE_PAT_CLASSIC" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
+        : "${LOGIN_SECRET:?LOGIN_SECRET is required}"
+        printf '%s' "$LOGIN_SECRET" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
     - name: Push to registry for docker images
       run: docker push $FULLTAG
