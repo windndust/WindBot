@@ -17,7 +17,7 @@ jobs:
       JAR_NAME: ${{ steps.variables.outputs.JAR_NAME }}
       NAME: ${{ steps.variables.outputs.NAME }}
       VERSION: ${{ steps.variables.outputs.VERSION }}
-      ARTIFACTID: ${{ steps.upload_step.outputs.artifact-id }}
+      ARTIFACTID: ${{ steps.artifact-upload-step.outputs.artifact-id }}
 
     steps:
 
