@@ -68,7 +68,10 @@ jobs:
         printf '%s' "$LOGIN_SECRET" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
     - name: Push to registry for docker images
-      run: docker push $FULLTAG
+      run: docker push $REGISTRY $FULLTAG
+
+    - name: Registry for docker images loggout
+      run: docker logout $REGISTRY
 
 #    - name: Login to Github Docker registry
 #      uses: docker/login-action@v3
