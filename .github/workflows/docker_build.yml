@@ -79,12 +79,16 @@ jobs:
       run: |
         echo "FULLTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:$VERSION" >> "$GITHUB_ENV"
         echo "LATESTTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:latest" >> "$GITHUB_ENV"
+        echo $JAR_NAME
 
     - name: Download jar
       uses: actions/download-artifact@v5
       with:
         name: ${{ env.JAR_NAME }}
         path: .
+        
+    - name: troubleshoot
+      run: ls . -la
 
     - name: Build the docker image
       run: docker build . --file Dockerfile --tag $FULLTAG --build-arg JAR_NAME=$JAR_NAME
