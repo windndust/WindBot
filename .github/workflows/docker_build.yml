@@ -62,7 +62,7 @@ jobs:
 
     - name: Login to registry for docker images
       env:
-        LOGIN_SECRET=${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
+        LOGIN_SECRET: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
       run: |
         : "${LOGIN_SECRET:?LOGIN_SECRET is required}"
         printf '%s' "$LOGIN_SECRET" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
