@@ -41,20 +41,17 @@ jobs:
     - name: Execute package phase of default lifecycle
       run: mvn -X -B package
 
-    - name: Execute maven help:evaluate to get jar name
-      run: jarName=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar && echo "jarName:"$jarName
-
-    - name: Execute maven help:evaluate to get name
-      run: name=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //') && echo "name:"$name
-
-    - name: Execute maven help:evaluate to get version
-      run: version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //') && echo "version:"$version
+    - name: Variable assignment from mvn help:evaluate
+      run: |
+        echo "JAR_NAME=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar" >> "$GITHUB_ENV"
+        echo "NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_ENV"
+        echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_ENV"
 
     - name: Build the docker image
-      run: docker build . --file Dockerfile --tag $name:$version --build-arg JAR_NAME=$jarName
+      run: docker build . --file Dockerfile --tag $NAME:$VERSION --build-arg JAR_NAME=$JAR_NAME
 
     - name: Tag the docker image with latest
-      run: docker tag $name:$version $name:latest
+      run: docker tag $NAME:$VERSION $NAME:latest
 
     - name: Login to Github Docker registry
       uses: docker/login-action@v3
@@ -67,6 +64,6 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: true
-        tags: $name:latest
+        tags: $NAME:latest
         load: true
         provenance: false
