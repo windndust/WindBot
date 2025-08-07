@@ -54,6 +54,9 @@ jobs:
         echo "NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
         echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
 
+    - name: troubleshoot
+      echo: echo "JAR_NAME=${{ steps.variables.outputs.JAR_NAME }}"
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
