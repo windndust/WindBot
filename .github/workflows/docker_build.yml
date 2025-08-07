@@ -111,6 +111,7 @@ jobs:
       env:
         BEARER_TOKEN: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
       run: |
+        echo "ArtifactId=$ARTIFACTID"
         curl -v -X DELETE \
              -H "Authorization: Bearer $BEARER_TOKEN" \
              -H "Accept: application/vnd.github+json" \
