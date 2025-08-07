@@ -65,7 +65,7 @@ jobs:
         name: ${{ steps.variables.outputs.JAR_NAME }}
         path: |
           target/${{ steps.variables.outputs.JAR_NAME }}
-          .Dockerfile
+          Dockerfile
 
   docker:
     needs: maven_package_and_variable_assignment
