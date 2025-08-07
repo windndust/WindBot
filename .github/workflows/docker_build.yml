@@ -59,7 +59,9 @@ jobs:
       run: docker tag $FULLTAG $LATESTTAG
 
     - name: Login to registry for docker images
-      run: echo $GH_PACKAGE_PAT_CLASSIC | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
+      run: |
+        : "${GH_PACKAGE_PAT_CLASSIC:?GH_PACKAGE_PAT_CLASSIC is required}"
+        printf '%s' "$GH_PACKAGE_PAT_CLASSIC" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
     - name: Push to registry for docker images
       run: docker push $FULLTAG
