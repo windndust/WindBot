@@ -115,8 +115,8 @@ jobs:
         HTTP_CODE="$(curl -X DELETE \
                          -H "Authorization: Bearer $BEARER_TOKEN" \
                          -H "Accept: application/vnd.github+json" \
-                         https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACTID
-                         -v -w "%{http_code}")
+                         -v -w "%{http_code}" -o /dev/null \
+                         https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACTID)"
                           
         echo "HTTP CODE=$HTTP_CODE"
         if [ "$HTTP_CODE" -eq 204 ]; then
