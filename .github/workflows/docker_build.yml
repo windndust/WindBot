@@ -10,6 +10,9 @@ on:
 jobs:
   maven_package_and_variable_assignment:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     permissions:
       contents: read
       packages: write
@@ -35,9 +38,12 @@ jobs:
         server-id: github
         settings-path: ${{ github.workspace }}
 
-    - name: Create secrets.yml
+    - name: Variable assignment from mvn help:evaluate and redirect variables to GITHUB_OUTPUT 
+      id: variables
       run: |
-        echo "token:placeholder" > secrets.yml
+        echo "JAR_NAME=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar" >> "$GITHUB_OUTPUT"
+        echo "NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
+        echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
 
     - name: Execute package phase of default lifecycle
       run: mvn -X -B package
@@ -57,13 +63,6 @@ jobs:
           target/${{ steps.variables.outputs.JAR_NAME }}
           Dockerfile
 
-    - name: Variable assignment from mvn help:evaluate and redirect variables to GITHUB_OUTPUT 
-      id: variables
-      run: |
-        echo "JAR_NAME=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar" >> "$GITHUB_OUTPUT"
-        echo "NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
-        echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
-
   docker_build_and_push:
     needs: maven_package_and_variable_assignment
     env:
@@ -73,6 +72,9 @@ jobs:
       VERSION: ${{ needs.maven_package_and_variable_assignment.outputs.VERSION }}
       ARTIFACTID: ${{ needs.maven_package_and_variable_assignment.outputs.ARTIFACTID }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     permissions:
       contents: read
       packages: write
@@ -99,7 +101,7 @@ jobs:
       env:
         LOGIN_SECRET: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
       run: |
-        : "${LOGIN_SECRET:?LOGIN_SECRET is required}"
+        : "${LOGIN_SECRET:?::error:: Docker login failed due to missing Github personal access token}"
         printf '%s' "$LOGIN_SECRET" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
     - name: Push to registry for docker images
