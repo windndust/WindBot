@@ -116,7 +116,7 @@ jobs:
                          -H "Authorization: Bearer $BEARER_TOKEN" \
                          -H "Accept: application/vnd.github+json" \
                          -v -w "%{http_code}" -o /dev/null \
-                         https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACTID)"
+                         https://api.github.com/repos/${{ github.repository }}/actions/artifacts/132)"
                           
         echo "HTTP CODE=$HTTP_CODE"
         if [ "$HTTP_CODE" -eq 204 ]; then
