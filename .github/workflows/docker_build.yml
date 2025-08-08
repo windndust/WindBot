@@ -115,13 +115,10 @@ jobs:
         HTTP_CODE="$(curl -X DELETE \
                          -H "Authorization: Bearer $BEARER_TOKEN" \
                          -H "Accept: application/vnd.github+json" \
-                         -v -w "%{http_code}" -o /dev/null \
+                         -w "%{http_code}" -o /dev/null \
                          https://api.github.com/repos/${{ github.repository }}/actions/artifacts/132)"
-                          
-        echo "HTTP CODE=$HTTP_CODE"
         if [ "$HTTP_CODE" -eq 204 ]; then
           echo "Temporary artifact successfully deleted"
         else
-          echo "Received http status: $HTTP_CODE -Can't confirm artifact deletion"
-          exit 78
+          echo "::warning:: Can't confirm deletion of temporary artifact - Received status code: $HTTP_CODE"
         fi
