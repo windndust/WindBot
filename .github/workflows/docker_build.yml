@@ -1,0 +1,126 @@
+name: Maven Package and Docker Build, Push
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - 'main'
+    - 'feature/**'
+
+jobs:
+  maven_package_and_variable_assignment:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      JAR_NAME: ${{ steps.variables.outputs.JAR_NAME }}
+      NAME: ${{ steps.variables.outputs.NAME }}
+      VERSION: ${{ steps.variables.outputs.VERSION }}
+      ARTIFACTID: ${{ steps.artifact-upload-step.outputs.artifact-id }}
+
+    steps:
+
+    - name: Checkout Github repo
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+        server-id: github
+        settings-path: ${{ github.workspace }}
+
+    - name: Variable assignment from mvn help:evaluate and redirect variables to GITHUB_OUTPUT 
+      id: variables
+      run: |
+        echo "JAR_NAME=$(mvn help:evaluate -Dexpression=project.build.finalName -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //').jar" >> "$GITHUB_OUTPUT"
+        echo "NAME=$(mvn help:evaluate -Dexpression=project.artifactId -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
+        echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q | sed 's/\[INFO\] \[stdout\] //')" >> "$GITHUB_OUTPUT"
+
+    - name: Execute package phase of default lifecycle
+      run: mvn -X -B package
+
+    - name: Execute plugin goal deploy:deploy to publish to github packages
+      env:
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
+      run: mvn -X jar:jar deploy:deploy -s settings.xml
+
+    - name: Upload jar and Dockerfile artifacts
+      id: artifact-upload-step
+      uses: actions/upload-artifact@v4
+      with:
+        name: ArtifactsForDocker
+        path: |
+          target/${{ steps.variables.outputs.JAR_NAME }}
+          Dockerfile
+
+  docker_build_and_push:
+    needs: maven_package_and_variable_assignment
+    env:
+      REGISTRY: ghcr.io
+      JAR_NAME: ${{ needs.maven_package_and_variable_assignment.outputs.JAR_NAME }}
+      NAME: ${{ needs.maven_package_and_variable_assignment.outputs.NAME }}
+      VERSION: ${{ needs.maven_package_and_variable_assignment.outputs.VERSION }}
+      ARTIFACTID: ${{ needs.maven_package_and_variable_assignment.outputs.ARTIFACTID }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: read
+      packages: write
+    steps:
+
+    - name: Variable setup
+      run: |
+        echo "FULLTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:$VERSION" >> "$GITHUB_ENV"
+        echo "LATESTTAG=$REGISTRY/$GITHUB_ACTOR/$NAME:latest" >> "$GITHUB_ENV"
+
+    - name: Download jar and Dockerfile artifacts
+      uses: actions/download-artifact@v5
+      with:
+        name: ArtifactsForDocker
+        path: .
+
+    - name: Build the docker image
+      run: docker build . --file Dockerfile --tag $FULLTAG --build-arg JAR_NAME=$JAR_NAME
+
+    - name: Tag the docker image with latest
+      run: docker tag $FULLTAG $LATESTTAG
+
+    - name: Login to registry for docker images
+      env:
+        LOGIN_SECRET: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
+      run: |
+        : "${LOGIN_SECRET:?::error:: Docker login failed due to missing Github personal access token}"
+        printf '%s' "$LOGIN_SECRET" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
+
+    - name: Push to registry for docker images
+      run: docker push $FULLTAG
+
+    - name: Registry for docker images loggout
+      run: docker logout $REGISTRY
+
+    - name: Delete artifact
+      env:
+        BEARER_TOKEN: ${{ secrets.GH_PACKAGE_PAT_CLASSIC }}
+      run: |
+        HTTP_CODE="$(curl -X DELETE \
+                         -H "Authorization: Bearer $BEARER_TOKEN" \
+                         -H "Accept: application/vnd.github+json" \
+                         -w "%{http_code}" -o /dev/null \
+                         https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${ARTIFACTID})"
+        if [ "$HTTP_CODE" -eq 204 ]; then
+          echo "Temporary artifact successfully deleted"
+        else
+          echo "::warning:: Cannot confirm deletion of temporary artifact - Received status code: $HTTP_CODE"
+        fi
