@@ -6,6 +6,8 @@
 
 /target
 
+#Theia files to ignore
+/.theia
 
 # Spring files to ignore
 application*local*.yml
@@ -16,3 +18,4 @@ application*local*.yml
 # Maven files to ignore
 dependency-reduced-pom.xml
 secrets.yml
+/test.sh
