@@ -1,1 +1,2 @@
-token: ${discord.token}
+windbot:
+  token: ${discord.token:}
