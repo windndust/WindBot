@@ -1,0 +1,12 @@
+{"properties": [{
+  "name": "windbot",
+  "description": "A collection of configurations needed by windbot"
+},{
+  "name": "windbot.token",
+  "description": "A discord token the bot uses to authenticate to discord.com"
+},{
+  "name": "windbot.server_guild_id",
+  "description": "Your discord server's server id which can be copied from the discord client"
+}
+]
+}
