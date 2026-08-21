@@ -19,3 +19,5 @@ application*local*.yml
 dependency-reduced-pom.xml
 secrets.yml
 /test.sh
+
+README-Local.md
