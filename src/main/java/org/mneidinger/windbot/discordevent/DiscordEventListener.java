@@ -1,4 +1,4 @@
-package org.mneidinger.discordbot.event;
+package org.mneidinger.windbot.discordevent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import discord4j.core.event.domain.Event;
 import reactor.core.publisher.Mono;
 
-public interface EventListener<T extends Event> {
+public interface DiscordEventListener<T extends Event> {
 	
-	Logger LOG = LoggerFactory.getLogger(EventListener.class);
+	Logger LOG = LoggerFactory.getLogger(DiscordEventListener.class);
 	
 	Class<T> getEventType();
 	Mono<Void> execute(T event);
