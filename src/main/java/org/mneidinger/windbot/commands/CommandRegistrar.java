@@ -32,7 +32,7 @@ public class CommandRegistrar {
     }
 
 	@EventListener(ApplicationReadyEvent.class)
-	public void registerCommandsTwo(){
+	public void registerCommands(){
 
 		client.flatMapMany(client -> {
 
