@@ -2,6 +2,7 @@ package org.mneidinger.windbot.commands;
 
 import org.mneidinger.windbot.commands.requests.AboutCommandRequest;
 import org.mneidinger.windbot.commands.requests.CommandRequestFactory;
+import org.mneidinger.windbot.commands.responses.CommandResponse;
 import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Mono;
@@ -20,7 +21,7 @@ public class AboutCommand extends SlashCommand<AboutCommandRequest> {
     }
 
     @Override
-    Mono<String> execute(AboutCommandRequest t) {
-        return Mono.just("A custom discord bot developed by WinDnDusT! Capable of controlling the wind!");
+    Mono<CommandResponse> execute(AboutCommandRequest request) {
+        return Mono.just(CommandResponse.text("A custom discord bot developed by WinDnDusT! Capable of controlling the wind!"));
     }
 }

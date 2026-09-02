@@ -2,6 +2,7 @@ package org.mneidinger.windbot.commands;
 
 import org.mneidinger.windbot.commands.requests.CommandRequestFactory;
 import org.mneidinger.windbot.commands.requests.RollCommandRequest;
+import org.mneidinger.windbot.commands.responses.CommandResponse;
 import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Mono;
@@ -20,8 +21,7 @@ public class RollCommand extends SlashCommand<RollCommandRequest>{
     }
 
     @Override
-    Mono<String> execute(RollCommandRequest request) {
-        //Placeholder while I puzzle out the CommandRouter and injecting the request object
-        return Mono.just("You Rolled %s %s".formatted(request.numOfDie(), request.dieType()));
+    Mono<CommandResponse> execute(RollCommandRequest request) {
+        return Mono.just(CommandResponse.text("You rolled %s %ss".formatted(request.numOfDie(), request.dieType())));
     }
 }
