@@ -12,7 +12,11 @@
 
 	<properties>
 		<maven.compiler.release>21</maven.compiler.release>
+		<discord4j.version>3.3.2</discord4j.version>
 		<spring-boot.version>4.1.0</spring-boot.version>
+		<lombok.version>1.18.46</lombok.version>
+		<maven.dev.profile></maven.dev.profile>
+		<maven.h2.profile></maven.h2.profile>
 	</properties>
 
 	<dependencyManagement>
@@ -34,10 +38,23 @@
 	</dependencyManagement>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>com.discord4j</groupId>
 			<artifactId>discord4j-core</artifactId>
-			<version>3.3.2</version>
+			<version>${discord4j.version}</version>
+			<exclusions>
+				<!-- Prevent IDE auto-suggesting imports from this dependency -->
+				<exclusion>
+					<groupId>com.austinv11.servicer</groupId>
+					<artifactId>Servicer</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -50,6 +67,15 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>			
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -89,6 +115,10 @@
 					<docker>
 						<host>//./pipe/dockerDesktopLinuxEngine</host>
 					</docker>
+					<profiles>
+						<profile>${maven.dev.profile}</profile>
+						<profile>${maven.h2.profile}</profile>
+					</profiles>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -97,6 +127,9 @@
 	<profiles>
 		<profile>
 			<id>dev</id>
+			<properties>
+				<maven.dev.profile>local-dev</maven.dev.profile>
+			</properties>
 			<build>
 				<resources>
 					<resource>
@@ -104,6 +137,25 @@
 					</resource>
 				</resources>
 			</build>	
+		</profile>
+		<profile>
+			<id>h2</id>
+			<properties>
+				<maven.h2.profile>local-h2</maven.h2.profile>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>2.4.240</version>
+				</dependency>
+				<dependency>
+					<groupId>io.r2dbc</groupId>
+					<artifactId>r2dbc-h2</artifactId>
+					<version>1.1.0.RELEASE</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 
